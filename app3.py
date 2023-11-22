@@ -1,5 +1,6 @@
 import gradio as gr
-from openai import OpenAI
+# from openai import OpenAI
+import openai
 
 from langchain.llms import OpenAI
 import os
@@ -14,24 +15,24 @@ load_dotenv()
 
 
 def process(filepath):
-    # client = OpenAI(api_key="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")
-    client = OpenAI(openai_api_key="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")
+    # set openai key
+    client = openai.OpenAI(api_key="your-key")
+    my_key = "your-key"
 
-    my_key = "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"
+    # Store the voice input to a file
+    audio = open(str(filepath), "rb")
 
-    audio = open(filepath, "rb")
-    # Ensure the API key is set for any other OpenAI services
-    #my_key = os.getenv("OPEN_AI_KEY")
-    
-    # transcript =client.audio.transcribe("whisper-1",audio)
-    transcript =client.audio.transcriptions.create(model="whisper-1",file=audio)
+    # openai speech-to-text
+    transcript =client.audio.transcriptions.create(
+        model="whisper-1",
+        file=audio)
 
-
+    # langchain
     llm = OpenAI(temperature=1, openai_api_key = my_key)
 
-   # return llm(transcript["text"])
-# Construct the prompt for translation
-    prompt_for_translation = f"Translate this to Japanese: {transcript['text']}"
+    # Construct the prompt for translation
+    prompt_for_translation = f"Translate this to Japanese: {transcript}"
+
 
     # Get the translation response
     translation_response = llm(prompt_for_translation)
